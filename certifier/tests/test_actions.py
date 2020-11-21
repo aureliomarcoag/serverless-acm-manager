@@ -1,6 +1,6 @@
-import certifier
-import conftest
 import json
+import conftest
+import certifier
 
 
 # Cannot be tested with moto atm: https://github.com/spulec/moto/blob/master/moto/acm/responses.py#L211
