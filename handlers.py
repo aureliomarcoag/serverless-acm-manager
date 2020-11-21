@@ -100,7 +100,7 @@ def manage_certificates(event, context):
         certificates_to_delete,
         certificates_to_create,
         certificates_failed,
-    ) = certifier.certifier.get_certificates_from_s3_event(event)
+    ) = get_certificates_from_s3_event(event)
     for certificate in certificates_to_delete:
         actions.mark_for_deletion(actions.query(identifier=certificate[2]))
     for certificate in certificates_to_create:
