@@ -1,0 +1,61 @@
+---
+service: certifier
+provider:
+  name: aws
+  runtime: python3.8
+  stage: default
+  iamRoleStatements:
+    - Effect: 'Allow'
+      Action:
+        - 's3:*'
+      Resource:
+        Fn::Join:
+          - ''
+          - - 'arn:aws:s3:::'
+            - ${self:custom.s3_bucket_name}
+            - '/*'
+    - Effect: 'Allow'
+      Action:
+        - 'acm:*'
+      Resource: 
+        - '*'
+    - Effect: 'Allow'
+      Action:
+        - 'ssm:*'
+      Resource: 
+        - '*'
+
+custom:
+  s3_bucket_name: "#{AWS::Region}-#{AWS::AccountId}-${self:service}-${opt:stage}-certificates"
+
+functions:
+  manage-certificates:
+    handler: manage_certificates.handler
+    timeout: 120
+    events:
+      - s3:
+          bucket: ${self:custom.s3_bucket_name}
+          event: s3:ObjectCreated:*
+          existing: true
+      - s3:
+          bucket: ${self:custom.s3_bucket_name}
+          event: s3:ObjectRemoved:*
+          existing: true
+
+  delete-certificates:
+    handler: delete_certificates.handler
+    events:
+      - schedule: rate(1 day)
+
+  transition-certificates:
+    handler: transition_certificates.handler
+    events:
+      - schedule: rate(1 day)
+
+resources:
+  Resources:
+    CertificatesBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${s3_bucket_name}
+

@@ -1,0 +1,36 @@
+{
+  "Records": [
+    {
+      "eventVersion": "2.1",
+      "eventSource": "aws:s3",
+      "awsRegion": "us-east-1",
+      "eventTime": "2020-10-27T10:00:17.318Z",
+      "eventName": "ObjectRemoved:Delete",
+      "userIdentity": {
+        "principalId": "AWS:AIDAJK37SVBQPCOX57MT4"
+      },
+      "requestParameters": {
+        "sourceIPAddress": "91.47.34.49"
+      },
+      "responseElements": {
+        "x-amz-request-id": "821E64E286309631",
+        "x-amz-id-2": "1tf4DcGy60KpVM/IRauzAh3RaIPo4bFA/QWMuNeW/ZNvpMvS0aqUjkDEVs1Q3U8jjc8FAi9N3N4C9ZY98XBxu4a1JTgzewKI"
+      },
+      "s3": {
+        "s3SchemaVersion": "1.0",
+        "configurationId": "6308bb69-6d95-46a5-a79b-5b996b99920c",
+        "bucket": {
+          "name": "backups-marco",
+          "ownerIdentity": {
+            "principalId": "A2E0IEAU59MXA6"
+          },
+          "arn": "arn:aws:s3:::backups-marco"
+        },
+        "object": {
+          "key": "battery.txt",
+          "sequencer": "005F97EFBA92EFC5D6"
+        }
+      }
+    }
+  ]
+}

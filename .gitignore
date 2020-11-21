@@ -1,0 +1,4 @@
+.serverless/
+__pycache__
+.coverage
+
