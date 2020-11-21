@@ -40,24 +40,21 @@ def manage_certificates(event, context):
     """
     Handler for lambda to manage certificates
     """
-    try:
-        (
-            certificates_to_delete,
-            certificates_to_create,
-            certificates_failed,
-        ) = certifier.certifier.get_certificates_from_s3_event(event)
-        for certificate in (certificates_to_delete,):
-            actions.mark_for_deletion(actions.query(identifier=certificate[2]))
-        for certificate in certificates_to_create:
-            bucket, key, identifier = certificate
-            domains = read_domains_from_file(next(get_file_from_s3(bucket, key)))
-            actions.request_certificate(identifier, domains)
-        for certificate in certificates_failed:
-            print("Failed to create certificate from s3://{}/{} with the following reason: {}".format(*certificate))
+    (
+        certificates_to_delete,
+        certificates_to_create,
+        certificates_failed,
+    ) = certifier.certifier.get_certificates_from_s3_event(event)
+    for certificate in (certificates_to_delete,):
+        actions.mark_for_deletion(actions.query(identifier=certificate[2]))
+    for certificate in certificates_to_create:
+        bucket, key, identifier = certificate
+        domains = read_domains_from_file(next(get_file_from_s3(bucket, key)))
+        actions.request_certificate(identifier, domains)
+    for certificate in certificates_failed:
+        print("Failed to create certificate from s3://{}/{} with the following reason: {}".format(*certificate))
 
-        print("Delete: {}, Create: {}".format(str(certificates_to_delete), str(certificates_to_create)))
-    except Exception as exception:
-        print("Failed to parse S3 event: " + str(exception))
+    print("Delete: {}, Create: {}".format(str(certificates_to_delete), str(certificates_to_create)))
 
 
 def transition_certificates(event, context):
