@@ -30,7 +30,7 @@ custom:
 
 functions:
   manage-certificates:
-    handler: manage_certificates.handler
+    handler: handlers.manage_certificates
     timeout: 120
     events:
       - s3:
@@ -43,12 +43,12 @@ functions:
           existing: true
 
   delete-certificates:
-    handler: delete_certificates.handler
+    handler: handlers.delete_certificates
     events:
       - schedule: rate(1 day)
 
   transition-certificates:
-    handler: transition_certificates.handler
+    handler: handlers.transition_certificates
     events:
       - schedule: rate(1 day)
 
