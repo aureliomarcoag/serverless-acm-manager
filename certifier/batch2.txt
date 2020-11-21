@@ -1,3 +1,0 @@
-first.atestdomain.net
-second.atestdomain.net
-third.atestdomain.net
