@@ -6,15 +6,6 @@ from moto import mock_acm  # type: ignore
 import boto3  # type: ignore
 
 
-def pytest_configure():
-    module_root = pathlib.Path(__file__).parent
-    test_files = {}
-    for test_file in module_root.joinpath("files").glob("*"):
-        test_files[test_file.name] = test_file.absolute()
-
-    pytest.test_files = test_files
-
-
 @pytest.fixture(scope="function")
 def acm_client():
     mock = mock_acm()
