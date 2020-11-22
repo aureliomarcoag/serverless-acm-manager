@@ -19,7 +19,7 @@ def get_certificates_from_s3_event(
     and the key stripped of file extensions (up to the first dot).
     The third element of tuples in the list of failed items is the reason for the failure instead of the object key stripped of extensions.
     The following validation is performed:
-    * Make sure the S3 key only contains letters, numbers and the characters .-_ to make sure it's compatible with Parameter Store.
+    * Make sure the S3 key only contains letters, numbers and the characters .-_ to make sure it can be used as the name of a parameter in Parameter Store.
     Example of a create list:
     [("my_bucket", "key/to.my/object.first.txt", "key/to/object")]
     Example of a failure list:
@@ -28,7 +28,7 @@ def get_certificates_from_s3_event(
     if "Records" not in event:
         raise KeyError("'Records' key not found in event object")
 
-    pattern = re.compile(r"([A-Za-z0-9]|-|_|\.|/)+")
+    name_pattern = re.compile(r"([A-Za-z0-9]|-|_|\.|/)+")
     delete_certificates: List[Tuple[str, str, str]] = []
     create_certificates: List[Tuple[str, str, str]] = []
     failed_certificates: List[Tuple[str, str, str]] = []
@@ -44,9 +44,9 @@ def get_certificates_from_s3_event(
         if certificate_file_data[1][-1] == "/":
             failed_reason += "Ignoring S3 folder object: 's3://{}/{}'. ".format(*certificate_file_data)
 
-        if not pattern.fullmatch(certificate_file_data[1]):
-            failed_reason += "The S3 object key '{}' does not match the pattern '{}'. ".format(
-                certificate_file_data[1], pattern.pattern
+        if not name_pattern.fullmatch(certificate_file_data[1]):
+            failed_reason += "The S3 object key '{}' is not a valid parameter name for AWS Parameter Store (it does not match '{}'). ".format(
+                certificate_file_data[1], name_pattern.pattern
             )
 
         if failed_reason:
