@@ -28,7 +28,7 @@ def get_certificates_from_s3_event(
     if "Records" not in event:
         raise KeyError("'Records' key not found in event object")
 
-    pattern = re.compile("([A-Za-z0-9]|-|_|\.|/)+")
+    pattern = re.compile(r"([A-Za-z0-9]|-|_|\.|/)+")
     delete_certificates: List[Tuple[str, str, str]] = []
     create_certificates: List[Tuple[str, str, str]] = []
     failed_certificates: List[Tuple[str, str, str]] = []
