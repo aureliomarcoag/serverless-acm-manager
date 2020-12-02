@@ -6,6 +6,24 @@ A serverless application to manage your AWS ACM certificates for you.
 
 Install and configure Serverless: https://www.serverless.com/framework/docs/getting-started/
 
+## How it works
+This serverless application reads domains from files stored in an S3 bucket and creates one ACM certificate for each file.
+The key of the object used in S3 is also used to store an SSM parameter containing the ARN of the latest available certificate corresponding to a file.
+
+For example, if the following file is added to S3 with the key `/mybrand/domains1.txt`:
+```
+domain1.com
+www.domain1.com
+secure.domain1.com
+```
+
+This would result in an ACM certificate being created. After all domains are validated, this application takes care to create an SSM parameter with the ARN of the validated certificate. The name of the parameter created is the same as the object key without extension and prepended with /certifier. In the current example, that would be `/certifier/mybrand/domains1`.
+
+If you update this file in S3, a new certificate will be created - once all domains of the new certificate are validated, the old one is deleted and the SSM parameter is updated.
+
+### TL;DR
+Upload a file with a list of domains to S3. This application will request a certificate with the specified domains and create an SSM parameter with the name of the file containing the certificate ARN so you can easily refer to it in Terraform or Cloudformation.
+
 ## Deploy
 
 ### Single region
