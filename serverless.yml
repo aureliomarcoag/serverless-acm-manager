@@ -25,9 +25,6 @@ provider:
       Resource: 
         - '*'
 
-custom:
-  s3_bucket_name: "#{AWS::Region}-#{AWS::AccountId}-${self:service}-${self:provider.stage}-certificates"
-
 functions:
   manage-certificates:
     handler: handlers.manage_certificates
