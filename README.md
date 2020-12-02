@@ -144,3 +144,10 @@ serverless deploy --certificates-bucket my-certificate-bucket-on-eu-central-1 --
 
 Make sure to only add and delete objects on the primary bucket!
 
+## Contributing
+
+### Unit tests
+```bash
+coverage run -m pytest # Run unit tests
+coverage report -m # Check coverage report
+```
