@@ -3,7 +3,7 @@ import string
 import random
 import re
 from enum import Enum
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Generator, Iterable
 import boto3  # type: ignore
 
 # Test AVAILABLE certificate status after 1min in moto:
@@ -59,17 +59,16 @@ class actions:
         self.acm_client = boto3.client("acm")
         self.ssm_client = boto3.client("ssm")
 
-    def _list_certificates(self):
+    def _list_certificates(self) -> Generator[Dict, None, None]:
         """
         Runs list_certificates() however many api calls are necessary to retrieve all existing ACM certificates
         """
-        all_raw_certificates: List = []
         while True:
             list_certificates_response: Dict = self.acm_client.list_certificates()
-            all_raw_certificates.extend(list_certificates_response["CertificateSummaryList"])
+            for raw_certificate in list_certificates_response["CertificateSummaryList"]:
+                yield raw_certificate
             if "NextToken" not in list_certificates_response:
                 break
-        return all_raw_certificates
 
     def _get_acm_state(self, certificate: Certificate) -> str:
         """
@@ -81,7 +80,7 @@ class actions:
 
     def _raw_certificates_to_objects(
         self,
-        raw_certificates: List[Dict],
+        raw_certificates: Iterable[Dict],
     ) -> List[Certificate]:
         """
         Converts a list of raw certificates as returned by a list_certitificates API call
