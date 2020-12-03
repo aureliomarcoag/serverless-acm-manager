@@ -228,7 +228,10 @@ class actions:
                 )
                 self.mark_for_deletion(previous_available)
                 self.ssm_client.put_parameter(
-                    Name="/certifier/{}".format(certificate.identifier), Value=certificate.arn, Type="String"
+                    Name="/certifier/{}".format(certificate.identifier),
+                    Value=certificate.arn,
+                    Type="String",
+                    Overwrite=True,
                 )
 
     def retry_failed(self, certificate: Certificate):
