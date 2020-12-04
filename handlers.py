@@ -87,7 +87,7 @@ def delete_certificates(event, context):
     """
     Handler for lambda to delete certificates
     """
-    actions.delete(actions.query(state=certifier.States.MARKED_FOR_DELETION))
+    print(actions.delete(actions.query(state=certifier.States.MARKED_FOR_DELETION)))
 
 
 def manage_certificates(event, context):
