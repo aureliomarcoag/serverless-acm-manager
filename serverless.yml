@@ -16,7 +16,17 @@ provider:
             - '/*'
     - Effect: 'Allow'
       Action:
-        - 'acm:*'
+        - 'acm:DeleteCertificate'
+        - 'acm:DescribeCertificate'
+        - 'acm:RemoveTagsFromCertificate'
+        - 'acm:AddTagsToCertificate'
+      Resource:
+        - Fn::Sub: 'arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/*'
+    - Effect: 'Allow'
+      Action:
+        - 'acm:RequestCertificate'
+        - 'acm:ListCertificates'
+        - 'acm:ListTagsForCertificate'
       Resource: 
         - '*'
     - Effect: 'Allow'
