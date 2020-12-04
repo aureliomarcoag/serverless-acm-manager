@@ -31,9 +31,11 @@ provider:
         - '*'
     - Effect: 'Allow'
       Action:
-        - 'ssm:*'
+        - 'ssm:GetParameter'
+        - 'ssm:PutParameter'
+        - 'ssm:DeleteParameter'
       Resource: 
-        - '*'
+        - Fn::Sub: 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/certifier/*'
 
 functions:
   manage-certificates:
