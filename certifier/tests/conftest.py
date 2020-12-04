@@ -2,7 +2,7 @@ import glob
 import pathlib
 import json  # type: ignore
 import pytest  # type: ignore
-from moto import mock_acm  # type: ignore
+from moto import mock_acm, mock_ssm  # type: ignore
 import boto3  # type: ignore
 
 
@@ -24,4 +24,13 @@ def acm_client():
             acm_client.add_tags_to_certificate(CertificateArn=r["CertificateArn"], Tags=certificate["Tags"])
 
     yield acm_client
+    mock.stop()
+
+
+@pytest.fixture(scope="function")
+def ssm_client():
+    mock = mock_ssm()
+    mock.start()
+    ssm_client = boto3.client("ssm")
+    yield ssm_client
     mock.stop()

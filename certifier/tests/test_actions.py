@@ -1,4 +1,5 @@
 import json
+import time
 import pytest
 from certifier import certifier
 
@@ -19,10 +20,26 @@ def test_query_with_acm_state(acm_client):
         )
 
 
+def test_certificate_transition(acm_client, ssm_client):
+    actions = certifier.actions()
+    certificate = actions.query(state=certifier.States.PENDING, with_acm_state=True)[0]
+    assert certificate.acm_state == "PENDING_VALIDATION"
+    # Wait for validation (moto internally validates after 60s)
+    time.sleep(60)
+    transition_certificates = actions.query(
+        identifier=certificate.identifier, state=certifier.States.PENDING, with_acm_state=True
+    )
+    assert transition_certificates[0].acm_state == "ISSUED"
+    assert transition_certificates[0].arn == certificate.arn
+    actions.transition_to_available(transition_certificates)
+    available_certificates = actions.query(identifier=certificate.identifier, state=certifier.States.AVAILABLE)
+    assert available_certificates[0].arn == certificate.arn
+    assert len(available_certificates) == 1
+
+
 def test_get_acm_state(acm_client):
     actions = certifier.actions()
     certificate = actions.query()[0]
-    # Moto only supports the PENDING_VALIDATION state for now
     assert actions._get_acm_state(certificate) == "PENDING_VALIDATION"
 
 
