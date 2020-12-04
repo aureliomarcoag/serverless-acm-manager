@@ -6,9 +6,6 @@ from enum import Enum
 from typing import List, Tuple, Dict, Generator, Iterable, Optional
 import boto3  # type: ignore
 
-# Test AVAILABLE certificate status after 1min in moto:
-# https://github.com/spulec/moto/blob/master/moto/acm/models.py#L339
-
 
 class Tags(Enum):
     """
