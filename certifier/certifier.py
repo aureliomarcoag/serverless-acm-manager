@@ -218,7 +218,7 @@ class actions:
                 )
                 self.mark_for_deletion(previous_available)
                 self.ssm_client.put_parameter(
-                    Name="/certifier/{certificate.identifier}",
+                    Name=f"/certifier/{certificate.identifier}",
                     Value=certificate.arn,
                     Type="String",
                     Overwrite=True,
