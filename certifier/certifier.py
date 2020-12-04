@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 import string
 import random
+from dataclasses import dataclass
 from enum import Enum
-from typing import List, Tuple, Dict, Generator, Iterable
+from typing import List, Tuple, Dict, Generator, Iterable, Optional
 import boto3  # type: ignore
 
 # Test AVAILABLE certificate status after 1min in moto:
@@ -29,24 +30,17 @@ class States(Enum):
     ANY: str = "_"
 
 
+@dataclass
 class Certificate:
     """
-    A certificate object created based on data from ACM
+    Class to represent a certificate based on data from ACM
     """
 
-    def __init__(
-        self, identifier: str, arn: str, state: States, records: List[Tuple[str, str]] = None, acm_state: str = None
-    ) -> None:
-        self.identifier = identifier
-        self.arn = arn
-        self.state = state
-        self.records = records if records is not None else []
-        self.acm_state = acm_state
-
-    def __repr__(self):
-        return "{}; {}; {}; {}; {} records;".format(
-            self.identifier, self.state, self.acm_state, self.arn, len(self.records)
-        )
+    identifier: str
+    arn: str
+    state: States
+    records: Optional[List[Tuple[str, str]]] = None
+    acm_state: Optional[str] = None
 
 
 class actions:
