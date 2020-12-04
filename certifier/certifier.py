@@ -150,7 +150,7 @@ class actions:
         ssm_parameter_name = f"/certifier/{certificate.identifier}"
         ssm_parameter = self.ssm_client.get_parameter(Name=ssm_parameter_name)
         if "Parameter" in ssm_parameter and certificate.arn == ssm_parameter["Parameter"]["Value"]:
-            self.ssm_client.delete_parameter(ssm_parameter_name)
+            self.ssm_client.delete_parameter(Name=ssm_parameter_name)
 
     def delete(self, certificates: List[Certificate]) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
         """
