@@ -163,8 +163,7 @@ class actions:
             try:
                 self.acm_client.delete_certificate(CertificateArn=certificate.arn)
                 success.append({certificate.arn: "Certificate deleted."})
-                if certificate.state == States.AVAILABLE:
-                    self._delete_ssm_parameter(certificate)
+                self._delete_ssm_parameter(certificate)
             except self.acm_client.exceptions.ResourceNotFoundException:
                 success.append({certificate.arn: "Certificate not found when attempting to delete."})
             except self.acm_client.exceptions.ResourceInUseException:
