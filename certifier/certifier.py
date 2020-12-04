@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import string
 import random
-import re
 from enum import Enum
 from typing import List, Tuple, Dict, Generator, Iterable
 import boto3  # type: ignore
