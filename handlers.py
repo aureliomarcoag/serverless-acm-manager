@@ -42,12 +42,10 @@ def get_certificates_from_s3_event(
 
         failed_reason = ""
         if certificate_file_data[1][-1] == "/":
-            failed_reason += "Ignoring S3 folder object: 's3://{}/{}'. ".format(*certificate_file_data)
+            failed_reason += f"Ignoring S3 folder object: 's3://{'/'.join(certificate_file_data)}'. "
 
         if not name_pattern.fullmatch(certificate_file_data[1]):
-            failed_reason += "The S3 object key '{}' is not a valid parameter name for AWS Parameter Store (it does not match '{}'). ".format(
-                certificate_file_data[1], name_pattern.pattern
-            )
+            failed_reason += f"The S3 object key '{certificate_file_data[1]}' is not a valid parameter name for AWS Parameter Store (it does not match '{name_pattern.pattern}'). "
 
         if failed_reason:
             failed_certificates.append(certificate_file_data + (failed_reason,))
@@ -68,7 +66,7 @@ def get_file_from_s3(bucket: str, key: str) -> Generator[str, None, None]:
     """
     Yields the local path to the downloaded file and then deletes it
     """
-    file_path: str = "/tmp/{}".format(str(uuid.uuid4()))
+    file_path: str = "/tmp/{uuid.uuid4()}"
     s3_client.Bucket(bucket).download_file(key, file_path)
     yield file_path
     os.remove(file_path)
@@ -108,9 +106,11 @@ def manage_certificates(event, context):
         domains = read_domains_from_file(next(get_file_from_s3(bucket, key)))
         actions.request_certificate(identifier, domains)
     for certificate in certificates_failed:
-        print("Failed to create certificate from s3://{}/{} with the following reason: {}".format(*certificate))
+        print(
+            f"Failed to create certificate from s3://{'/'.join(certificate[:2])} with the following reason: {certificate[2]}"
+        )
 
-    print("Delete: {}, Create: {}".format(str(certificates_to_delete), str(certificates_to_create)))
+    print("Delete: {certificates_to_delete}, Create: {certificates_to_create}")
 
 
 def transition_certificates(event, context):
@@ -121,8 +121,8 @@ def transition_certificates(event, context):
     for certificate in certificates:
         if certificate.state == certifier.States.PENDING:
             if certificate.acm_state == "FAILED":
-                print("Failed to validate certificate, retrying: {}".format(str(certificate)))
+                print("Failed to validate certificate, retrying: {certificate}")
                 actions.retry_failed(certificate)
             if certificate.acm_state == "ISSUED":
-                print("Transitioning certificate to available state: {}".format(str(certificate)))
+                print("Transitioning certificate to available state: {certificate}")
                 actions.transition_to_available([certificate])
