@@ -87,7 +87,7 @@ class actions:
                 try:
                     tags.update({Tags(tag["Key"]): tag["Value"]})
                 except ValueError:
-                    print("Ignoring unknown tag {tag['Key']}")
+                    print(f"Ignoring unknown tag {tag['Key']}")
 
                 if Tags.IDENTIFIER in tags and Tags.STATE in tags:
                     certificate = Certificate(
@@ -147,7 +147,7 @@ class actions:
             )
 
     def _delete_ssm_parameter(self, certificate):
-        ssm_parameter_name = "/certifier/{certificate.identifier}"
+        ssm_parameter_name = f"/certifier/{certificate.identifier}"
         ssm_parameter = self.ssm_client.get_parameter(Name=ssm_parameter_name)
         if "Parameter" in ssm_parameter and certificate.arn == ssm_paramter["Parameter"]["Value"]:
             self.ssm_client.delete_parameter(ssm_parameter_name)
@@ -173,7 +173,7 @@ class actions:
                 failed.append({certificate.arn: "Certificate has an invalid arn."})
             except Exception as e:
                 if certificate:
-                    failed.append({certificate.arn: "Uknown exception: {e}"})
+                    failed.append({certificate.arn: f"Uknown exception: {e}"})
                 else:
                     failed.append({"None": "Empty certificate specified."})
         return success, failed
@@ -196,7 +196,7 @@ class actions:
         if len(domain_names) > 1:
             request_certificate_args["SubjectAlternativeNames"] = domain_names[1::]
 
-        print("Requesting new certificate: {request_certificate_args}")
+        print(f"Requesting new certificate: {request_certificate_args}")
         requested_certificate = self.acm_client.request_certificate(**request_certificate_args)
         self.acm_client.add_tags_to_certificate(
             CertificateArn=requested_certificate["CertificateArn"], Tags=certificate_tags

@@ -66,7 +66,7 @@ def get_file_from_s3(bucket: str, key: str) -> Generator[str, None, None]:
     """
     Yields the local path to the downloaded file and then deletes it
     """
-    file_path: str = "/tmp/{uuid.uuid4()}"
+    file_path: str = f"/tmp/{uuid.uuid4()}"
     s3_resource.Bucket(bucket).download_file(key, file_path)
     yield file_path
     os.remove(file_path)
@@ -110,7 +110,7 @@ def manage_certificates(event, context):
             f"Failed to create certificate from s3://{'/'.join(certificate[:2])} with the following reason: {certificate[2]}"
         )
 
-    print("Delete: {certificates_to_delete}, Create: {certificates_to_create}")
+    print(f"Delete: {certificates_to_delete}, Create: {certificates_to_create}")
 
 
 def transition_certificates(event, context):
@@ -121,8 +121,8 @@ def transition_certificates(event, context):
     for certificate in certificates:
         if certificate.state == certifier.States.PENDING:
             if certificate.acm_state == "FAILED":
-                print("Failed to validate certificate, retrying: {certificate}")
+                print(f"Failed to validate certificate, retrying: {certificate}")
                 actions.retry_failed(certificate)
             if certificate.acm_state == "ISSUED":
-                print("Transitioning certificate to available state: {certificate}")
+                print(f"Transitioning certificate to available state: {certificate}")
                 actions.transition_to_available([certificate])
