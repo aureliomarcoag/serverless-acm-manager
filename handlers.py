@@ -6,7 +6,7 @@ import boto3  # type: ignore
 from certifier import certifier
 
 actions = certifier.actions()
-s3_client = boto3.resource("s3")
+s3_resource = boto3.resource("s3")
 
 
 def get_certificates_from_s3_event(
@@ -67,7 +67,7 @@ def get_file_from_s3(bucket: str, key: str) -> Generator[str, None, None]:
     Yields the local path to the downloaded file and then deletes it
     """
     file_path: str = "/tmp/{uuid.uuid4()}"
-    s3_client.Bucket(bucket).download_file(key, file_path)
+    s3_resource.Bucket(bucket).download_file(key, file_path)
     yield file_path
     os.remove(file_path)
 
