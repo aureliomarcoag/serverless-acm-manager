@@ -7,7 +7,7 @@ provider:
   iamRoleStatements:
     - Effect: 'Allow'
       Action:
-        - 's3:*'
+        - 's3:GetObject'
       Resource:
         Fn::Join:
           - ''
