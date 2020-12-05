@@ -94,7 +94,7 @@ def test_mark_for_deletion(acm_client):
     ) == tuple(certificate.state for certificate in certificates)
 
 
-def test_delete(acm_client):
+def test_delete(acm_client, ssm_client):
     actions = certifier.actions()
     certificates = actions.query(identifier="certificate1")
     success, failed = actions.delete((certificates[0],))
