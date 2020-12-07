@@ -142,9 +142,7 @@ class actions:
         all of which are CNAMEs
         """
         certificate_data = self.acm_client.describe_certificate(CertificateArn=certificate_arn)["Certificate"]
-        domain_validation_options = (
-            [] if "DomainValidationOptions" not in certificate_data else certificate_data["DomainValidationOptions"]
-        )
+        domain_validation_options = certificate_data.get("DomainValidationOptions", [])
 
         return [
             (option["ResourceRecord"]["Name"], option["ResourceRecord"]["Value"])
@@ -166,7 +164,7 @@ class actions:
         ssm_parameter_name = f"/certifier/{certificate.identifier}"
         try:
             ssm_parameter = self.ssm_client.get_parameter(Name=ssm_parameter_name)
-            if "Parameter" in ssm_parameter and certificate.arn == ssm_parameter["Parameter"]["Value"]:
+            if certificate.arn == ssm_parameter.get("Parameter", {}).get("Value", ""):
                 self.ssm_client.delete_parameter(Name=ssm_parameter_name)
         except self.ssm_client.exceptions.ParameterNotFound:
             print(f"No parameter found with name {ssm_parameter_name}")
