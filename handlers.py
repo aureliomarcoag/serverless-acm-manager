@@ -17,13 +17,12 @@
 
 import os
 import re
-import uuid
 from typing import List, Generator, Tuple, Dict
 import boto3  # type: ignore
 from certifier import certifier
 
 actions = certifier.actions()
-s3_resource = boto3.resource("s3")
+s3_client = boto3.client("s3")
 
 
 def get_certificates_from_s3_event(
@@ -79,25 +78,11 @@ def get_certificates_from_s3_event(
     return delete_certificates, create_certificates, failed_certificates
 
 
-def get_file_from_s3(bucket: str, key: str) -> Generator[str, None, None]:
+def get_domains_from_s3_file(bucket, key) -> List[str]:
     """
-    Yields the local path to the downloaded file and then deletes it
+    Return a list of lines of the s3 file
     """
-    file_path: str = f"/tmp/{uuid.uuid4()}"
-    s3_resource.Bucket(bucket).download_file(key, file_path)
-    yield file_path
-    os.remove(file_path)
-
-
-def read_domains_from_file(file_path: str) -> List[str]:
-    """
-    Returns a list of domains that are defined one per line on the specified file path
-    """
-    domains: List[str] = []
-    with open(file_path) as domains_file:
-        while (domain_line := domains_file.readline()) :
-            domains.append(domain_line.strip("\n").strip(" "))
-    return domains
+    return s3_client.get_object(Bucket=bucket, Key=key)["Body"].read().decode("ascii").strip("\n").split("\n")
 
 
 def delete_certificates(event, context):
@@ -120,7 +105,7 @@ def manage_certificates(event, context):
         actions.mark_for_deletion(actions.query(identifier=certificate[2]))
     for certificate in certificates_to_create:
         bucket, key, identifier = certificate
-        domains = read_domains_from_file(next(get_file_from_s3(bucket, key)))
+        domains = get_domains_from_s3_file(bucket, key)
         actions.request_certificate(identifier, domains)
     for certificate in certificates_failed:
         print(
