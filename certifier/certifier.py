@@ -240,13 +240,13 @@ class actions:
                     Overwrite=True,
                 )
 
-    def retry_failed(self, certificate: Certificate):
+    def retry(self, certificate: Certificate):
         """
         Determine which domains are part of the certificate and request it again.
-        Mark failed certificate for deletion.
+        Mark retried certificate for deletion.
         """
         domains = self._get_domains_for_certificate(certificate)
-        # request_certificate will also mark the failed certificate for deletion
+        # request_certificate will also mark the retried certificate for deletion
         self.request_certificate(certificate.identifier, domains)
 
     def _get_domains_for_certificate(self, certificate) -> List[str]:

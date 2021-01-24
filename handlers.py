@@ -124,7 +124,7 @@ def transition_certificates(event, context):
         if certificate.state == certifier.States.PENDING:
             if certificate.acm_state == "FAILED":
                 print(f"Failed to validate certificate, retrying: {certificate}")
-                actions.retry_failed(certificate)
+                actions.retry(certificate)
             if certificate.acm_state == "ISSUED":
                 print(f"Transitioning certificate to available state: {certificate}")
                 actions.transition_to_available([certificate])
