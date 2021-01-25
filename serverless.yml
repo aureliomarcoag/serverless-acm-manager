@@ -54,10 +54,10 @@ functions:
   delete-certificates:
     handler: handlers.delete_certificates
     events:
-      - schedule: rate(1 day)
+      - schedule: rate(${opt:schedule-rate, "1 day"})
 
   transition-certificates:
     handler: handlers.transition_certificates
     events:
-      - schedule: rate(1 day)
+      - schedule: rate(${opt:schedule-rate, "1 day"})
 

@@ -26,6 +26,9 @@ Upload a file with a list of domains to S3. This application will request a cert
 
 ## Deploy
 
+In addition to the deployment options provided below, you can also specify the argument `--schedule-rate`, to determine how often to check for certificate state transitions.
+The default value is `1 day`. You can use any valid rates from [CloudWatch Rules](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html#RateExpressions), like `--schedule-rate "15 minutes"`.
+
 ### Single region
 To deploy the application to a single region, first [create an S3 bucket](https://docs.aws.amazon.com/AmazonS3/latest/gsg/CreatingABucket.html) on the region where you want to deploy and then run:
 ```bash
